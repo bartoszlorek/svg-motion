@@ -1,13 +1,15 @@
 const hash = require('./.internal/hash')
-const prefixer = require('./.internal/prefixer')
 const keyframes = require('./.internal/keyframes')
+const prefixer = require('./.internal/prefixer')
 
-function styleFrames(frames, duration = 1000) {
-    if (frames == null || !frames.length) {
+module.exports = function(classes, config = {}) {
+    if (classes == null || !classes.length) {
         return ''
     }
+
     let result = ''
-    const length = frames.length
+    const { duration } = config
+    const length = classes.length
     const delay = Math.round(duration / length)
     const point = Math.round(100 / length) + '%'
     const keysName = hash('keyframes-animation', 'keys-')
@@ -23,7 +25,7 @@ function styleFrames(frames, duration = 1000) {
     )
 
     // common animation style
-    result += '.' + frames.join(',.') + '{'
+    result += '.' + classes.join(',.') + '{'
     result += prefixer(
         'animation',
         `${keysName} ${duration}ms steps(${length}) infinite;`
@@ -31,12 +33,13 @@ function styleFrames(frames, duration = 1000) {
     result += 'visibility:hidden;}'
 
     // delay for each frame
-    result += frames.reduce((str, name, index) => {
+    result += classes.reduce((str, name, index) => {
         let style = prefixer('animationDelay', `${delay * index}ms;`)
         return str + `.${name}{${style}}`
     }, '')
 
+    // fallback IE9
+    result += `.${classes[0]}{visibility:visible;}`
+
     return result
 }
-
-module.exports = styleFrames

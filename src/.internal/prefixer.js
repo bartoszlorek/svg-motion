@@ -4,11 +4,9 @@ const vendors = {
     animationDelay: ['-webkit-animation-delay', 'animation-delay']
 }
 
-function prefixer(key, value) {
+module.exports = function(key, value) {
     return vendors[key].reduce((str, prop) => {
         let separator = prop[0] === '@' ? ' ' : ':'
         return str + `${prop}${separator}${value}`
     }, '')
 }
-
-module.exports = prefixer

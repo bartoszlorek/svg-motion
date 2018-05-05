@@ -1,7 +1,8 @@
-const { createSvgMotion } = require('./src/svg-motion')
+const svgMotion = require('./src/svg-motion')
 
-createSvgMotion({
-    input: './dist/loader.svg',
-    output: './dist/loader-motion.svg',
+svgMotion({
+    source: './dist/!(*-motion).svg',
+    output: './dist/[name]-motion.svg',
+    className: 'icon-loader',
     duration: 1500
 })

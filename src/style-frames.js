@@ -1,6 +1,6 @@
-const hash = require('./hash')
-const prefixer = require('./prefixer')
-const keyframes = require('./keyframes')
+const hash = require('./.internal/hash')
+const prefixer = require('./.internal/prefixer')
+const keyframes = require('./.internal/keyframes')
 
 function styleFrames(frames, duration = 1000) {
     if (frames == null || !frames.length) {

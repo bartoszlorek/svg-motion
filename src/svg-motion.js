@@ -2,11 +2,12 @@ const fs = require('fs')
 const parser = require('xml-js')
 const chalk = require('chalk')
 const { deepFilter } = require('./.utils/deep.min')
+const pad = require('./.utils/pad')
 
 const hash = require('./.internal/hash')
 const styleFrames = require('./style-frames')
 
-const CLASSNAME_PREFIX = 'frame-'
+const CLASSNAME_PREFIX = 'f'
 const CLASSNAME_LENGTH = 8
 
 function createSvgMotion(options) {
@@ -42,12 +43,13 @@ function createSvgMotion(options) {
 
         // clear additional style of frames
         svg.g = deepFilter(svg.g, (a, key) => key !== 'class')
+        const digitsLength = svg.g.length.toString().length + 1
 
         // hash frame names
         svg.g.forEach((frame, index) => {
             let name = hash(
                 frame._attributes.id + index,
-                CLASSNAME_PREFIX + index + '-',
+                CLASSNAME_PREFIX + pad(index, digitsLength) + '-',
                 CLASSNAME_LENGTH
             )
             frameNames.push(name)

@@ -3,7 +3,7 @@ const parser = require('xml-js')
 const chalk = require('chalk')
 const { deepFilter } = require('./.utils/deep.min')
 
-const hash = require('./hash')
+const hash = require('./.internal/hash')
 const styleFrames = require('./style-frames')
 
 const CLASSNAME_PREFIX = 'frame-'
@@ -17,6 +17,9 @@ function createSvgMotion(options) {
         if (error) {
             throw error
         }
+        // remove unnecessary characters
+        data = data.replace(/\s+/gm, ' ').replace(/\n/gm, '')
+
         const frameNames = []
         let { svg } = parser.xml2js(data, {
             ignoreDeclaration: true,

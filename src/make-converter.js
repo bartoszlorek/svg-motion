@@ -1,5 +1,5 @@
 const convert = require('xml-js')
-const style = require('./css-styler')
+const styleFrames = require('./.internal/style-frames')
 const hash = require('./.internal/hash')
 
 const omit = require('./.utils/omit')
@@ -61,7 +61,7 @@ module.exports = function(config) {
             elements: [
                 {
                     type: 'text',
-                    text: style(frameClasses, config)
+                    text: styleFrames(frameClasses, config.duration)
                 }
             ]
         })

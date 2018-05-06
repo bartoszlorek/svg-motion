@@ -5,9 +5,9 @@ const log = require('./.utils/logger')
 const readFileAsync = require('./.utils/read-file-async')
 const waitForEach = require('./.utils/wait-for-each')
 
-const optimize = require('./optimizer')
+const optimize = require('./svg-optimizer')
 const makeConverter = require('./make-converter')
-const makeOutput = require('./make-output')
+const resolveOutput = require('./resolve-output')
 
 const ENCODING = 'utf8'
 const DEFAULTS = {
@@ -20,11 +20,12 @@ const DEFAULTS = {
 function svgMotion(options) {
     const config = Object.assign({}, DEFAULTS, options)
 
-    let source = config.source
+    const source = config.source
     if (!source || typeof source !== 'string') {
-        return log.error('svgMotion requires source pattern.')
+        return log.error('The conversion requires source pattern.')
     }
-    const getOutput = makeOutput(config, '-motion')
+
+    const getOutput = resolveOutput(config, '-motion')
     if (getOutput === false) {
         return
     }
@@ -36,7 +37,7 @@ function svgMotion(options) {
     log.comment('--------------------------------')
 
     waitForEach(filepath => {
-        const writer = data => {
+        const saveOutput = data => {
             let output = getOutput(filepath)
             fs.writeFile(output, data, ENCODING, () => {
                 log.label('Output:', output)
@@ -48,7 +49,7 @@ function svgMotion(options) {
         return readFileAsync(filepath, ENCODING)
             .then(optimize)
             .then(convert)
-            .then(writer)
+            .then(saveOutput)
             .catch(log.error)
     }, files)
 }

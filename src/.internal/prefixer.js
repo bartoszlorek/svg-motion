@@ -1,12 +1,25 @@
 const vendors = {
-    keyframes: ['@-webkit-keyframes', '@keyframes'],
-    animation: ['-webkit-animation', 'animation'],
-    animationDelay: ['-webkit-animation-delay', 'animation-delay']
+    keyframes: ['@-webkit-', '@'],
+    animation: ['-webkit-', ''],
+    animationDelay: ['-webkit-', '']
 }
 
-module.exports = function(key, value) {
-    return vendors[key].reduce((str, prop) => {
-        let separator = prop[0] === '@' ? ' ' : ':'
-        return str + `${prop}${separator}${value}`
+const camelCaseToDash = value => {
+    return value.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase()
+}
+
+const operator = key => {
+    const separator = vendors[key][0][0] === '@' ? ' ' : ':'
+    const prop = camelCaseToDash(key)
+
+    return value => vendors[key].reduce((str, prefix) => {
+        return str + `${prefix + prop}${separator}${value}`
     }, '')
 }
+
+const api = {}
+Object.keys(vendors).forEach(prop => {
+    api[prop] = operator(prop)
+})
+
+module.exports = api

@@ -1,3 +1,11 @@
+/*
+    ruleset('selector', [
+        'declaration',
+        'declaration',
+        ...
+    ])
+*/
+
 module.exports = function(selector, rules) {
     return rules.reduce((result, value) => {
         let semi = value[value.length - 1] !== ';'

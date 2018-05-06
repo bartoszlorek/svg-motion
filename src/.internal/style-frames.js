@@ -25,10 +25,10 @@ module.exports = function(classes, duration) {
 
     // common animation style
     result += ruleset(classes.join(',.'), [
-        'visibility:hidden',
         prefixer.animation(
             `${keysName} ${duration}ms steps(${length}) infinite;`
-        )
+        ),
+        'visibility:hidden'
     ])
 
     // delay for each frame

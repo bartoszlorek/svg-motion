@@ -16,7 +16,11 @@ describe('declaration', () => {
     })
 
     it('should handle string declaration', () => {
-        expect(declaration('width:100%')).toBe('width:100%')
+        expect(declaration('width:100%;')).toBe('width:100%;')
+    })
+
+    it('should add missing semicolon', () => {
+        expect(declaration('width:100%')).toBe('width:100%;')
     })
 
     it('should handle object declaration', () => {
@@ -25,7 +29,7 @@ describe('declaration', () => {
                 prop: 'width',
                 value: '100%'
             })
-        ).toBe('width:100%')
+        ).toBe('width:100%;')
     })
 
     it('should handle prefixed declaration (multiple props)', () => {
@@ -33,7 +37,7 @@ describe('declaration', () => {
             prop: ['-webkit-animation', 'animation'],
             value: 'name 1s'
         })
-        expect(result).toBe('-webkit-animation:name 1s;animation:name 1s')
+        expect(result).toBe('-webkit-animation:name 1s;animation:name 1s;')
     })
 })
 

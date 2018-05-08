@@ -1,7 +1,6 @@
 const hash = require('./hash')
-const keyframes = require('./keyframes')
-const prefixer = require('./prefixer')
-const ruleset = require('./style-ruleset')
+const { ruleset, keyframes } = require('./css-syntax')
+const prefixer = require('./css-prefixer')
 
 module.exports = function(classes, duration) {
     if (classes == null || !classes.length) {
@@ -17,14 +16,14 @@ module.exports = function(classes, duration) {
     // animation keyframes
     result += prefixer.keyframes(
         keyframes(keysName, {
-            '0%': 'visibility:visible;',
-            [point]: 'visibility:hidden;',
-            '100%': 'visibility:hidden;'
+            '0%': 'visibility:visible',
+            [point]: 'visibility:hidden',
+            '100%': 'visibility:hidden'
         })
     )
 
     // common animation style
-    result += ruleset(classes.join(',.'), [
+    result += ruleset('.' + classes.join(',.'), [
         prefixer.animation(
             `${keysName} ${duration}ms steps(${length}) infinite;`
         ),
@@ -38,7 +37,7 @@ module.exports = function(classes, duration) {
     }, '')
 
     // fallback IE9
-    result += ruleset(classes[0], ['visibility:visible'])
+    result += ruleset('.' + classes[0], ['visibility:visible'])
 
     return result
 }

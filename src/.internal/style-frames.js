@@ -1,6 +1,6 @@
 const hash = require('./hash')
-const { ruleset, keyframes } = require('./css-syntax')
-const prefixer = require('./css-prefixer')
+const { ruleset, atRule } = require('./css-syntax')
+const prefix = require('./css-prefixes')
 
 module.exports = function(classes, duration) {
     if (classes == null || !classes.length) {
@@ -14,26 +14,27 @@ module.exports = function(classes, duration) {
     const keysName = hash('keyframes-animation', 'keys-')
 
     // animation keyframes
-    result += prefixer.keyframes(
-        keyframes(keysName, {
-            '0%': 'visibility:visible',
-            [point]: 'visibility:hidden',
-            '100%': 'visibility:hidden'
-        })
-    )
+    result += atRule(prefix('keyframes'), keysName, {
+        '0%': 'visibility:visible',
+        [point]: 'visibility:hidden',
+        '100%': 'visibility:hidden'
+    })
 
     // common animation style
     result += ruleset('.' + classes.join(',.'), [
-        prefixer.animation(
-            `${keysName} ${duration}ms steps(${length}) infinite;`
-        ),
+        {
+            prop: prefix('animation'),
+            value: `${keysName} ${duration}ms steps(${length}) infinite`
+        },
         'visibility:hidden'
     ])
 
     // delay for each frame
-    result += classes.reduce((str, name, index) => {
-        let rules = prefixer.animationDelay(`${delay * index}ms;`)
-        return str + `.${name}{${rules}}`
+    result += classes.reduce((string, name, index) => {
+        return string + ruleset('.' + name, [{
+            prop: prefix('animation-delay'),
+            value: `${delay * index}ms`
+        }])
     }, '')
 
     // fallback IE9

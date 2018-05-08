@@ -52,33 +52,40 @@ const addDeclaration = (string, data) => {
 */
 
 const ruleset = (selector, block) => {
-    return block.reduce(addDeclaration, selector + '{') + '}'
+    return selector + block.reduce(addDeclaration, '{') + '}'
 }
 
 /*
-    keyframes('name', {
-        '0%': block,
-        '50%': block,
-        '100%': block
+    atRule('keyword', 'rule', {
+        'selector': block,
+        'selector': block,
+        'selector': block
     })
 */
 
-const baseFrame = (selector, block) => {
+const baseBlock = (selector, block) => {
     if (Array.isArray(block)) {
         return ruleset(selector, block)
     }
     return `${selector}{${addDeclaration('', block)}}`
 }
 
-const keyframes = (name, frames) => {
-    let result = Object.keys(frames).reduce((string, selector) => {
-        return string + baseFrame(selector, frames[selector])
-    }, '')
-    return `${name}{${result}}`
+const atRule = (keyword, rule = '', block = {}) => {
+    let result = '@' + keyword + ' '
+    if (rule) {
+        result += rule
+    }
+    let statements = Object.keys(block)
+    if (statements.length) {
+        result += statements.reduce((string, selector) => {
+            return string + baseBlock(selector, block[selector])
+        }, '{') + '}'
+    }
+    return result
 }
 
 module.exports = {
     declaration: baseDeclaration,
     ruleset,
-    keyframes
+    atRule
 }

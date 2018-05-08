@@ -1,8 +1,4 @@
-const {
-    declaration,
-    ruleset,
-    keyframes
-} = require('../src/.internal/css-syntax')
+const { declaration, ruleset, atRule } = require('../src/.internal/css-syntax')
 
 describe('declaration', () => {
     it('should handle falsy value', () => {
@@ -57,17 +53,17 @@ describe('ruleset', () => {
     })
 })
 
-describe('keyframes', () => {
+describe('atRule', () => {
     it('should handle string declaration', () => {
-        let result = keyframes('name', {
+        let result = atRule('keyframe', 'name', {
             '0%': 'width:0%',
             '100%': 'width:100%'
         })
-        expect(result).toBe('name{0%{width:0%;}100%{width:100%;}}')
+        expect(result).toBe('@keyframe name{0%{width:0%;}100%{width:100%;}}')
     })
 
     it('should handle object declaration', () => {
-        let result = keyframes('name', {
+        let result = atRule('keyframe', 'name', {
             '0%': {
                 prop: 'width',
                 value: '0%'
@@ -77,11 +73,11 @@ describe('keyframes', () => {
                 value: '100%'
             }
         })
-        expect(result).toBe('name{0%{width:0%;}100%{width:100%;}}')
+        expect(result).toBe('@keyframe name{0%{width:0%;}100%{width:100%;}}')
     })
 
     it('should handle multiple declarations', () => {
-        let result = keyframes('name', {
+        let result = atRule('keyframe', 'name', {
             '0%': [
                 {
                     prop: 'width',
@@ -104,7 +100,7 @@ describe('keyframes', () => {
             ]
         })
         expect(result).toBe(
-            'name{0%{width:0%;height:0%;}100%{width:100%;height:100%;}}'
+            '@keyframe name{0%{width:0%;height:0%;}100%{width:100%;height:100%;}}'
         )
     })
 })

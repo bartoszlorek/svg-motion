@@ -1,7 +1,5 @@
-const add = (fn, context) => {
-    return context != null
-        ? (a, b) => a + fn(b, context[b])
-        : (a, b) => a + fn(b)
+const withValue = (fn, context) => {
+    return a => fn(a, context[a])
 }
 
 const semicolon = a => {
@@ -58,13 +56,12 @@ const declaration = data => {
     ])
 */
 
-const ruleset = (selector, declarations) => {
-    if (Array.isArray(declarations)) {
-        return block(selector, declarations
-            .reduce(add(declaration), ''))
+const ruleset = (selector, body) => {
+    if (Array.isArray(body)) {
+        return block(selector, body.map(declaration).join(''))
     }
-    if (typeof declarations === 'string') {
-        return block(selector, semicolon(declarations))
+    if (typeof body === 'string') {
+        return block(selector, semicolon(body))
     }
     return ''
 }
@@ -100,7 +97,7 @@ const atRule = (keyword, name, body) => {
     }
     // conditional
     return result + block(name, Object.keys(body)
-        .reduce(add(ruleset, body), ''))
+        .map(withValue(ruleset, body)).join(''))
 }
 
 module.exports = {

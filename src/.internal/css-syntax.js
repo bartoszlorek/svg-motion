@@ -1,3 +1,17 @@
+const add = (fn, context) => {
+    return context != null
+        ? (a, b) => a + fn(b, context[b])
+        : (a, b) => a + fn(b)
+}
+
+const semicolon = a => {
+    return a[a.length - 1] === ';' ? a : a + ';'
+}
+
+const block = (name, body) => {
+    return name + '{' + (body || '') + '}'
+}
+
 /*
     declaration('width:100%')
     declaration({
@@ -6,33 +20,26 @@
     })
 */
 
-const baseDeclaration = data => {
+const declaration = data => {
     if (data == null) {
-        return false
+        return ''
     }
     // string declaration
     if (typeof data === 'string') {
-        if (data[data.length - 1] !== ';') {
-            data += ';'
-        }
-        return data
+        return semicolon(data)
     }
     // object declaration
     let { prop, value } = data
     if (value == null) {
-        return false
+        return ''
     }
+    // prefixes of property
     if (Array.isArray(prop)) {
         return prop
             .map(name => name + ':' + value)
             .join(';') + ';'
     }
     return prop + ':' + value + ';'
-}
-
-const addDeclaration = (string, data) => {
-    let result = baseDeclaration(data)
-    return result !== false ? string + result : result
 }
 
 /*
@@ -51,41 +58,54 @@ const addDeclaration = (string, data) => {
     ])
 */
 
-const ruleset = (selector, block) => {
-    return selector + block.reduce(addDeclaration, '{') + '}'
+const ruleset = (selector, declarations) => {
+    if (Array.isArray(declarations)) {
+        return block(selector, declarations
+            .reduce(add(declaration), ''))
+    }
+    if (typeof declarations === 'string') {
+        return block(selector, semicolon(declarations))
+    }
+    return ''
 }
 
-/*
-    atRule('keyword', 'rule', {
-        'selector': block,
-        'selector': block,
-        'selector': block
+/* 
+    without body:
+    atRule('keyword', 'rule')
+
+    unconditional:
+    atRule('keyword', 'name', [
+        declaration,
+        declaration,
+        ...
+    ])
+
+    conditional:
+    atRule('keyword', 'name', {
+        rule: declarations,
+        rule: declarations,
+        ...
     })
 */
 
-const baseBlock = (selector, block) => {
-    if (Array.isArray(block)) {
-        return ruleset(selector, block)
-    }
-    return `${selector}{${addDeclaration('', block)}}`
-}
-
-const atRule = (keyword, rule = '', block = {}) => {
+const atRule = (keyword, name, body) => {
     let result = '@' + keyword + ' '
-    if (rule) {
-        result += rule
+
+    if (body == null) {
+        return result + name + ';'
     }
-    let statements = Object.keys(block)
-    if (statements.length) {
-        result += statements.reduce((string, selector) => {
-            return string + baseBlock(selector, block[selector])
-        }, '{') + '}'
+    // unconditional
+    if (Array.isArray(body)) {
+        return result + ruleset(name, body)
     }
-    return result
+    // conditional
+    return result + block(name, Object.keys(body)
+        .reduce(add(ruleset, body), ''))
 }
 
 module.exports = {
-    declaration: baseDeclaration,
+    block,
+    declaration,
     ruleset,
     atRule
 }

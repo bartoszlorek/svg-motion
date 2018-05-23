@@ -1,20 +1,12 @@
 const convert = require('xml-js')
-const styleFrames = require('./.internal/style-frames')
-const hash = require('./.internal/hash')
-
+const applyStyle = require('./.internal/apply-style')
 const omit = require('./.utils/omit')
-const pad = require('./.utils/pad')
 
 const INCLUDE_ELEMENTS = ['path', 'g']
 const EXCLUDE_ATTRS = ['id', 'display', 'visibility']
-const CLASSNAME_PREFIX = 'f'
-const CLASSNAME_LENGTH = 8
 
 module.exports = function(config) {
-    const extraClassName = config.className ? ' ' + config.className : ''
-
     return data => {
-        const frameClasses = []
         const svgjs = convert.xml2js(data, {
             compact: false
         })
@@ -31,41 +23,22 @@ module.exports = function(config) {
             'xml:space': 'preserve'
         }
 
-        // remove unnecessary elements
-        svg.elements = svg.elements.filter(node => {
-            return INCLUDE_ELEMENTS.indexOf(node.name) !== -1
-        })
-
-        const frames = svg.elements
-        const digitsLength = frames.length.toString().length + 1
-
-        // hash classNames and clean attributes
-        frames.forEach((frame, index) => {
-            const name = hash(
-                frame.attributes.id + index,
-                CLASSNAME_PREFIX + pad(index, digitsLength) + '-',
-                CLASSNAME_LENGTH
-            )
-            frameClasses.push(name)
-            frame.attributes = omit(frame.attributes, EXCLUDE_ATTRS)
-            frame.attributes.class = name + extraClassName
-        })
-
-        // add motion style element
-        svg.elements.unshift({
+        // wrap root element around frames
+        svg.elements = [{
             type: 'element',
-            name: 'style',
-            attributes: {
-                type: 'text/css'
-            },
-            elements: [
-                {
-                    type: 'text',
-                    text: styleFrames(frameClasses, config.duration)
-                }
-            ]
-        })
+            name: 'g',
+            attributes: {},
+            elements: svg.elements
+                .filter(node => {
+                    return INCLUDE_ELEMENTS.indexOf(node.name) !== -1
+                })
+                .map((frame, index) => {
+                    frame.attributes = omit(frame.attributes, EXCLUDE_ATTRS)
+                    return frame
+                })
+        }]
 
+        applyStyle(svg, config.duration)
         return convert.js2xml(svgjs, { compact: false })
     }
 }

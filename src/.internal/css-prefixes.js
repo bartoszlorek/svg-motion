@@ -42,7 +42,7 @@ const schema = {
     'flex-wrap': [_MS_],
     'hyphens': [_WEBKIT_, _MS_],
     'justify-content': ['-webkit-box-pack', '-ms-flex-pack'],
-    'keyframes': ['@-webkit-keyframes', '@keyframes'],
+    'keyframes': [_WEBKIT_],
     'order': ['-webkit-box-ordinal-group', '-ms-flex-'],
     'perspective': [_WEBKIT_],
     'perspective-origin': [_WEBKIT_],
@@ -63,27 +63,23 @@ const schema = {
     'user-select': [_WEBKIT_, _MOZ_, _MS_]
 }
 
-const AT_RULES_CODE = '@'
 const PREFIXES_CODE = '-'
-const prefixes = {}
+const PREFIXES = (function() {
+    let result = {}
 
-// compute all property's variants
-Object.keys(schema).forEach(prop => {
-    let variants = schema[prop]
-    if (variants[0][0] === AT_RULES_CODE) {
-        return
-    }
-    let result = variants.map(value => {
-        if (value[value.length - 1] === PREFIXES_CODE) {
-            value += prop
-        }
-        return value
+    Object.keys(schema).forEach(prop => {
+        result[prop] = schema[prop].map(prefix => {
+            if (prefix[prefix.length - 1] === PREFIXES_CODE) {
+                prefix += prop
+            }
+            return prefix
+        })
+        result[prop].push(prop)
     })
-    result.push(prop)
-    prefixes[prop] = result
-})
+    return result
+})()
 
 module.exports = prop => {
-    let result = prop != null ? prefixes[prop] : null
+    let result = prop != null ? PREFIXES[prop] : null
     return result !== undefined ? result : prop
 }

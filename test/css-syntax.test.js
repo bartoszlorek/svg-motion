@@ -75,7 +75,7 @@ describe('ruleset', () => {
 
 describe('atRule', () => {
     it('should put rulesets [Object] in the body', () => {
-        let result = atRule('keyframe', 'name', {
+        let result = atRule('keyframes', 'name', {
             from: [
                 { prop: 'top', value: '0px' },
                 { prop: 'left', value: '0px' }
@@ -86,17 +86,28 @@ describe('atRule', () => {
             ]
         })
         expect(result).toBe(
-            '@keyframe name{from{top:0px;left:0px;}to{top:100px;left:100px;}}'
+            '@keyframes name{from{top:0px;left:0px;}to{top:100px;left:100px;}}'
         )
     })
 
     it('should put rulesets [String] in the body', () => {
-        let result = atRule('keyframe', 'name', {
+        let result = atRule('keyframes', 'name', {
             from: 'top:0px;left:0px',
             to: 'top:100px;left:100px'
         })
         expect(result).toBe(
-            '@keyframe name{from{top:0px;left:0px;}to{top:100px;left:100px;}}'
+            '@keyframes name{from{top:0px;left:0px;}to{top:100px;left:100px;}}'
+        )
+    })
+
+    it('should handle keyword with prefixes', () => {
+        let prefixes = ['-webkit-keyframes', 'keyframes'],
+            result = atRule(prefixes, 'name', {
+                from: 'top:0px',
+                to: 'top:100px'
+            })
+        expect(result).toBe(
+            '@-webkit-keyframes name{from{top:0px;}to{top:100px;}}@keyframes name{from{top:0px;}to{top:100px;}}'
         )
     })
 

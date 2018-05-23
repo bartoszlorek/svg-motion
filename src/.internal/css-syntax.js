@@ -85,7 +85,7 @@ const ruleset = (selector, body) => {
     })
 */
 
-const atRule = (keyword, name, body) => {
+const baseAtRule = (keyword, name, body) => {
     let result = '@' + keyword + ' '
 
     if (body == null) {
@@ -98,6 +98,15 @@ const atRule = (keyword, name, body) => {
     // conditional
     return result + block(name, Object.keys(body)
         .map(withValue(ruleset, body)).join(''))
+}
+
+const atRule = (keyword, name, body) => {
+    if (Array.isArray(keyword)) {
+        return keyword.map(key =>
+            baseAtRule(key, name, body)
+        ).join('')
+    }
+    return baseAtRule(keyword, name, body)
 }
 
 module.exports = {

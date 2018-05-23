@@ -6,7 +6,7 @@ const readFileAsync = require('./.utils/read-file-async')
 const waitForEach = require('./.utils/wait-for-each')
 
 const optimize = require('./svg-optimizer')
-const makeConverter = require('./make-converter')
+const makeConverter = require('./make-converter-translate')
 const resolveOutput = require('./resolve-output')
 
 const ENCODING = 'utf8'

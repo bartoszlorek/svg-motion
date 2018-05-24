@@ -74,7 +74,18 @@ describe('ruleset', () => {
 })
 
 describe('atRule', () => {
-    it('should put rulesets [Object] in the body', () => {
+    it('should handle keyword with prefixes', () => {
+        let prefixes = ['-webkit-keyframes', 'keyframes'],
+            result = atRule(prefixes, 'name', {
+                from: 'top:0px',
+                to: 'top:100px'
+            })
+        expect(result).toBe(
+            '@-webkit-keyframes name{from{top:0px;}to{top:100px;}}@keyframes name{from{top:0px;}to{top:100px;}}'
+        )
+    })
+
+    it('should handle conditional body [Object]', () => {
         let result = atRule('keyframes', 'name', {
             from: [
                 { prop: 'top', value: '0px' },
@@ -90,7 +101,7 @@ describe('atRule', () => {
         )
     })
 
-    it('should put rulesets [String] in the body', () => {
+    it('should handle conditional body [String]', () => {
         let result = atRule('keyframes', 'name', {
             from: 'top:0px;left:0px',
             to: 'top:100px;left:100px'
@@ -100,29 +111,7 @@ describe('atRule', () => {
         )
     })
 
-    it('should handle body as a String', () => {
-        let body = 'from{top:0px;}to{top:100px;}'
-        let result = atRule('keyframes', 'name', body)
-        expect(result).toBe(`@keyframes name{${body}}`)
-    })
-
-    it('should handle keyword with prefixes', () => {
-        let prefixes = ['-webkit-keyframes', 'keyframes'],
-            result = atRule(prefixes, 'name', {
-                from: 'top:0px',
-                to: 'top:100px'
-            })
-        expect(result).toBe(
-            '@-webkit-keyframes name{from{top:0px;}to{top:100px;}}@keyframes name{from{top:0px;}to{top:100px;}}'
-        )
-    })
-
-    it('should handle rule without body', () => {
-        let result = atRule('charset', 'utf-8')
-        expect(result).toBe('@charset utf-8;')
-    })
-
-    it('should handle unconditional body', () => {
+    it('should handle unconditional body [Object]', () => {
         let result = atRule('font-face', '', [
             { prop: 'font-family', value: '"Open Sans"' },
             { prop: 'src', value: 'url(...)' }
@@ -130,5 +119,26 @@ describe('atRule', () => {
         expect(result).toBe(
             '@font-face {font-family:"Open Sans";src:url(...);}'
         )
+    })
+
+    it('should handle unconditional body [String]', () => {
+        let result = atRule('font-face', '', [
+            'font-family:"Open Sans"',
+            'src:url(...)'
+        ])
+        expect(result).toBe(
+            '@font-face {font-family:"Open Sans";src:url(...);}'
+        )
+    })
+
+    it('should handle body as a String', () => {
+        let body = 'from{top:0px;}to{top:100px;}'
+        let result = atRule('keyframes', 'name', body)
+        expect(result).toBe(`@keyframes name{${body}}`)
+    })
+
+    it('should handle rule without body', () => {
+        let result = atRule('charset', 'utf-8')
+        expect(result).toBe('@charset utf-8;')
     })
 })

@@ -70,10 +70,9 @@ module.exports = function(svg, duration) {
     })
 
     const onlyIE = 'screen and (min-width:0\\0)'
-    result += atRule('media', onlyIE, ruleset('.' + framesClassName, [
-        `animation:${visibilityName} ${duration}ms steps(${length}) infinite`,
-        'visibility:hidden'
-    ]))
+    result += atRule('media', onlyIE, {
+        ['.' + framesClassName]: `animation:${visibilityName} ${duration}ms steps(${length}) infinite;visibility:hidden`
+    })
 
     // add style element before root
     svg.elements.unshift({

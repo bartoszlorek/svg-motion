@@ -7,6 +7,6 @@ const svgMotion = require('./src/svg-motion')
 // })
 
 svgMotion({
-    source: './dist/loader-white.svg',
+    source: './dist/*(loader|loader-white).svg',
     duration: 1200
 })

@@ -70,17 +70,17 @@ const ruleset = (selector, body) => {
     without body:
     atRule('keyword', 'rule')
 
-    string:
+    string body:
     atRule('keyword', 'name', 'rulesets')
 
-    unconditional:
+    unconditional body:
     atRule('keyword', 'name', [
         declaration,
         declaration,
         ...
     ])
 
-    conditional:
+    conditional body:
     atRule('keyword', 'name', {
         rule: declarations,
         rule: declarations,
@@ -88,31 +88,31 @@ const ruleset = (selector, body) => {
     })
 */
 
-const baseAtRule = (keyword, name, body) => {
-    let result = '@' + keyword + ' '
-
-    if (body == null) {
-        return result + name + ';'
-    }
+const atRuleBody = body => {
     if (typeof body === 'string') {
-        return result + name + '{' + body + '}'
+        return body
     }
     // unconditional
     if (Array.isArray(body)) {
-        return result + ruleset(name, body)
+        return body.map(declaration).join('')
     }
     // conditional
-    return result + block(name, Object.keys(body)
-        .map(withValue(ruleset, body)).join(''))
+    return Object.keys(body)
+        .map(withValue(ruleset, body))
+        .join('')
 }
 
 const atRule = (keyword, name, body) => {
+    let rules = body !== undefined
+        ? block(name, atRuleBody(body))
+        : name + ';'
+
     if (Array.isArray(keyword)) {
-        return keyword.map(key =>
-            baseAtRule(key, name, body)
-        ).join('')
+        return keyword.reduce((str, key) => (
+            str + `@${key} ${rules}`
+        ), '')
     }
-    return baseAtRule(keyword, name, body)
+    return `@${keyword} ${rules}`
 }
 
 module.exports = {

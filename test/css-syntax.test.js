@@ -100,6 +100,12 @@ describe('atRule', () => {
         )
     })
 
+    it('should handle body as a String', () => {
+        let body = 'from{top:0px;}to{top:100px;}'
+        let result = atRule('keyframes', 'name', body)
+        expect(result).toBe(`@keyframes name{${body}}`)
+    })
+
     it('should handle keyword with prefixes', () => {
         let prefixes = ['-webkit-keyframes', 'keyframes'],
             result = atRule(prefixes, 'name', {

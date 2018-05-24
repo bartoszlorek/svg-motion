@@ -70,6 +70,9 @@ const ruleset = (selector, body) => {
     without body:
     atRule('keyword', 'rule')
 
+    string:
+    atRule('keyword', 'name', 'rulesets')
+
     unconditional:
     atRule('keyword', 'name', [
         declaration,
@@ -90,6 +93,9 @@ const baseAtRule = (keyword, name, body) => {
 
     if (body == null) {
         return result + name + ';'
+    }
+    if (typeof body === 'string') {
+        return result + name + '{' + body + '}'
     }
     // unconditional
     if (Array.isArray(body)) {

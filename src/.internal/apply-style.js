@@ -1,6 +1,6 @@
 const hash = require('./hash')
-const { ruleset, atRule } = require('./css-syntax')
 const prefix = require('./css-prefixes')
+const { ruleset, atRule } = require('./css-syntax')
 const parseViewBox = require('../.utils/parse-view-box')
 
 // -webkit-animation: Chr, Saf
@@ -20,17 +20,20 @@ module.exports = function(svg, duration) {
     const delay = Math.round(duration / length)
 
     const signature = JSON.stringify(frames)
-    const rootClassName = hash(signature, 'rt')
-    const framesClassName = hash(signature, 'fc')
+    const rootClassName = hash(signature, 'r')
+    const framesClassName = hash(signature, 'f')
     const transformName = hash('transform-animation', 'k')
     const visibilityName = hash('visibility-animation', 'k')
 
     // add class to root element
+    if (root.attributes == null) {
+        root.attributes = {}
+    }
     root.attributes.class = rootClassName
 
     // add class and local style to each frame
-    // IE ignores svg transform by style attribute
-    // IE accepts animation delay
+    // IE ignores svg style transformation
+    // IE accepts svg style animation delay
     frames.forEach((frame, index) => {
         frame.attributes.class = framesClassName
         frame.attributes.style = `transform:translate(${width * index}px,0);animation-delay:${delay * index}ms;`
@@ -44,11 +47,11 @@ module.exports = function(svg, duration) {
     // transform animation keyframes (for non-IE browsers)
     result += atRule(prefix('keyframes'), transformName, {
         '0%': [{
-            prop: prefix('transform'),
+            prop: ['-webkit-transform', 'transform'],
             value: 'translate(0,0)'
         }],
         '100%': [{
-            prop: prefix('transform'),
+            prop: ['-webkit-transform', 'transform'],
             value: `translate(-${length * 100}%,0)`
         }]
     })
@@ -66,11 +69,11 @@ module.exports = function(svg, duration) {
         '100%': 'visibility:hidden'
     })
 
-    const ieRuleset = ruleset('.' + framesClassName, [
+    const onlyIE = 'screen and (min-width:0\\0)'
+    result += atRule('media', onlyIE, ruleset('.' + framesClassName, [
         `animation:${visibilityName} ${duration}ms steps(${length}) infinite`,
         'visibility:hidden'
-    ])
-    result += `@media screen and (min-width:0\\0){${ieRuleset}}`
+    ]))
 
     // add style element before root
     svg.elements.unshift({

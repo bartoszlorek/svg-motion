@@ -13,7 +13,6 @@ const ENCODING = 'utf8'
 const DEFAULTS = {
     source: '',
     output: '',
-    className: '',
     duration: 1000
 }
 

@@ -24,7 +24,9 @@
   "dependencies": {
     "blueimp-md5": "^2.10.0",
     "chalk": "^2.4.1",
+    "commander": "^2.15.1",
     "glob": "^7.1.2",
+    "lodash": "^4.17.10",
     "svgo": "^1.0.5",
     "xml-js": "^1.6.2"
   }

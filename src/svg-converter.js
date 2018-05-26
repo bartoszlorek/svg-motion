@@ -6,18 +6,27 @@ const INCLUDE_ELEMS = ['path', 'g']
 const EXCLUDE_ATTRS = ['id', 'display', 'visibility']
 const SVG_CLASS = 'svg-motion'
 
+const unwrapRoot = svg => {
+    if (svg.attributes.class === SVG_CLASS) {
+        svg.elements = svg.elements[1].elements
+    }
+    return svg
+}
+const isIncludedFrame = node => {
+    return INCLUDE_ELEMS.indexOf(node.name) !== -1
+}
+const cleanAttributes = frame => {
+    frame.attributes = omit(frame.attributes, EXCLUDE_ATTRS)
+    return frame
+}
+
 module.exports = function(config) {
     return data => {
         const svgjs = convert.xml2js(data, {
             compact: false
         })
 
-        const svg = svgjs.elements[0]
-
-        // unwrap rooted frames
-        if (svg.attributes.class === SVG_CLASS) {
-            svg.elements = svg.elements[1].elements
-        }
+        const svg = unwrapRoot(svgjs.elements[0])
 
         // recreate svg attributes
         svg.attributes = {
@@ -35,16 +44,13 @@ module.exports = function(config) {
             type: 'element',
             name: 'g',
             elements: svg.elements
-                .filter(node => {
-                    return INCLUDE_ELEMS.indexOf(node.name) !== -1
-                })
-                .map((frame, index) => {
-                    frame.attributes = omit(frame.attributes, EXCLUDE_ATTRS)
-                    return frame
-                })
+                .filter(isIncludedFrame)
+                .map(cleanAttributes)
         }]
 
         applyStyle(svg, config.duration)
-        return convert.js2xml(svgjs, { compact: false })
+        return convert.js2xml(svgjs, {
+            compact: false
+        })
     }
 }

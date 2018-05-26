@@ -3,7 +3,7 @@ const {
     declaration,
     ruleset,
     atRule
-} = require('../src/.internal/css-syntax')
+} = require('../src/.utils/css-syntax')
 
 describe('block', () => {
     it('should always return string', () => {

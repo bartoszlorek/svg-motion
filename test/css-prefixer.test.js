@@ -1,4 +1,4 @@
-const prefix = require('../src/.internal/css-prefixes')
+const prefix = require('../src/.utils/css-prefixes')
 
 describe('css-prefixes', () => {
     it('should return null for falsy values', () => {

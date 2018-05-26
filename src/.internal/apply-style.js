@@ -1,6 +1,6 @@
 const hash = require('./hash')
-const prefix = require('./css-prefixes')
-const { ruleset, atRule } = require('./css-syntax')
+const prefix = require('../.utils/css-prefixes')
+const { ruleset, atRule } = require('../.utils/css-syntax')
 const parseViewBox = require('../.utils/parse-view-box')
 
 // -webkit-animation: Chr, Saf

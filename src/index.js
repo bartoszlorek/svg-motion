@@ -26,8 +26,8 @@ module.exports = function(options) {
     }
 
     const files = glob.sync(source)
-    let remains = files.length - 1
-    if (remains === -1) {
+    let remains = files.length
+    if (remains === 0) {
         return log.error(`There is no file(s) with given pattern '${source}'.`)
     }
 
@@ -41,19 +41,18 @@ module.exports = function(options) {
     log.comment('--------------------------------')
 
     waitForEach(srcpath => {
-        const writeFile = data => {
-            let outpath = output(srcpath)
-            fs.writeFile(outpath, data, ENCODING, () => {
-                log.label('Output:', outpath)
-                if (!remains--) {
-                    log.comment('The SVG files have been created.')
-                }
-            })
-        }
         return readFileAsync(srcpath, ENCODING)
             .then(optimizer)
             .then(converter)
-            .then(writeFile)
+            .then(data => {
+                let outpath = output(srcpath)
+                fs.writeFile(outpath, data, ENCODING, () => {
+                    log.label('Output:', outpath)
+                    if (!--remains) {
+                        log.comment('The SVG files have been created.')
+                    }
+                })
+            })
             .catch(log.error)
     }, files)
 }

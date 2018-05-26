@@ -1,24 +1,10 @@
 const convert = require('xml-js')
-const omit = require('./.utils/omit')
+const unwrapRoot = require('./.internal/unwrap-root')
+const isFrameNode = require('./.internal/is-frame-node')
+const cleanAttrs = require('./.internal/clean-attrs')
 const applyStyle = require('./.internal/apply-style')
 
-const INCLUDE_ELEMS = ['path', 'g']
-const EXCLUDE_ATTRS = ['id', 'display', 'visibility']
 const SVG_CLASS = 'svg-motion'
-
-const unwrapRoot = svg => {
-    if (svg.attributes.class === SVG_CLASS) {
-        svg.elements = svg.elements[1].elements
-    }
-    return svg
-}
-const isIncludedFrame = node => {
-    return INCLUDE_ELEMS.indexOf(node.name) !== -1
-}
-const cleanAttributes = frame => {
-    frame.attributes = omit(frame.attributes, EXCLUDE_ATTRS)
-    return frame
-}
 
 module.exports = function(config) {
     return data => {
@@ -26,7 +12,7 @@ module.exports = function(config) {
             compact: false
         })
 
-        const svg = unwrapRoot(svgjs.elements[0])
+        const svg = unwrapRoot(svgjs.elements[0], SVG_CLASS)
 
         // recreate svg attributes
         svg.attributes = {
@@ -44,8 +30,8 @@ module.exports = function(config) {
             type: 'element',
             name: 'g',
             elements: svg.elements
-                .filter(isIncludedFrame)
-                .map(cleanAttributes)
+                .filter(isFrameNode)
+                .map(cleanAttrs)
         }]
 
         applyStyle(svg, config.duration)

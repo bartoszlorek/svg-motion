@@ -1,12 +1,8 @@
 const path = require('path')
 const log = require('./.utils/logger')
+const isPattern = require('./.internal/is-pattern')
 
 const MARKER = '[name]'
-const PATTERN_CHARS = /[\*\!\?\(\|\)\[\]\+\@]/
-
-const isPattern = value => {
-    return typeof value === 'string' && PATTERN_CHARS.test(value)
-}
 
 module.exports = function(config, defaultSuffix = '') {
     const { source, output } = config

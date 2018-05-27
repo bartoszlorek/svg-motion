@@ -10,14 +10,15 @@ const parseViewBox = require('../.utils/parse-view-box')
 // -ms-transform: IE 9
 // transform: IE 10, Fx 16+, Op 12.1+
 
-module.exports = function(svg, duration) {
+module.exports = function(svg, duration, iteration) {
+    iteration = iteration ? iteration : 'infinite'
     let result = ''
 
     const root = svg.elements[0]
     const frames = root.elements
     const length = frames.length
-    const width = parseViewBox(svg.attributes.viewBox).width
-    const delay = Math.round(duration / length)
+    const offset = parseViewBox(svg.attributes.viewBox).width
+    const delayUnit = Math.round(duration / length)
 
     const signature = JSON.stringify(frames)
     const rootClassName = hash(signature, 'r')
@@ -36,7 +37,7 @@ module.exports = function(svg, duration) {
     // IE accepts svg style animation delay
     frames.forEach((frame, index) => {
         frame.attributes.class = framesClassName
-        frame.attributes.style = `transform:translate(${width * index}px,0);animation-delay:${delay * index}ms;`
+        frame.attributes.style = `transform:translate(${offset * index}px,0);animation-delay:${delayUnit * index}ms;`
 
         // IE9 fallback: not animating but visible
         if (index === 0) {
@@ -58,7 +59,7 @@ module.exports = function(svg, duration) {
 
     result += ruleset('.' + rootClassName, [{
         prop: prefix('animation'),
-        value: `${transformName} ${duration}ms steps(${length}) infinite`
+        value: `${transformName} ${duration}ms steps(${length}) ${iteration}`
     }])
 
     // visibility animation keyframes (for IE10+ browsers)
@@ -71,7 +72,7 @@ module.exports = function(svg, duration) {
 
     const onlyIE = 'screen and (min-width:0\\0)'
     result += atRule('media', onlyIE, {
-        ['.' + framesClassName]: `animation:${visibilityName} ${duration}ms steps(${length}) infinite;visibility:hidden`
+        ['.' + framesClassName]: `animation:${visibilityName} ${duration}ms steps(${length}) ${iteration};visibility:hidden`
     })
 
     // add style element before root

@@ -14,7 +14,8 @@ const ENCODING = 'utf8'
 const DEFAULTS = {
     source: '',
     output: '',
-    duration: 1000
+    duration: 1000,
+    iteration: 0
 }
 
 module.exports = function(options) {

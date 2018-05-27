@@ -4,7 +4,8 @@ const svgMotion = require('./index')
 program
     .option('-s, --source <pattern>', 'pattern for source file(s)')
     .option('-o, --output [pattern]', 'pattern for output file(s)')
-    .option('-d, --duration <pattern>', 'duration of the animation')
+    .option('-d, --duration <pattern>', 'duration of one cycle - default: 1000')
+    .option('-i, --iteration [count]', 'number of animation cycles - default: 0 (infinite)')
 
 program.on('--help', () => {
     console.log(`
@@ -29,5 +30,6 @@ program.parse(process.argv)
 svgMotion({
     source: program.source,
     output: program.output,
-    duration: program.duration
+    duration: +program.duration,
+    iteration: +program.iteration
 })

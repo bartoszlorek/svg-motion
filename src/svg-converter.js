@@ -7,6 +7,8 @@ const applyStyle = require('./.internal/apply-style')
 const SVG_CLASS = 'svg-motion'
 
 module.exports = function(config) {
+    const { duration, iteration } = config
+
     return data => {
         const svgjs = convert.xml2js(data, {
             compact: false
@@ -34,7 +36,7 @@ module.exports = function(config) {
                 .map(cleanAttrs)
         }]
 
-        applyStyle(svg, config.duration)
+        applyStyle(svg, duration, iteration)
         return convert.js2xml(svgjs, {
             compact: false
         })

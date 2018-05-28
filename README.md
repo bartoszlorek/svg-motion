@@ -10,13 +10,13 @@ Keep in mind that all `style` elements inside svg file will be removed. This too
   <b>SVG Save As</b>
 </p>
 <p align="center">
-  <img width="515" height="716" src="https://user-images.githubusercontent.com/13873576/40585171-3ad552bc-61ae-11e8-9a60-b175ed0af115.png">
+  <img width="515" height="716" src="https://user-images.githubusercontent.com/13873576/40585171-3ad552bc-61ae-11e8-9a60-b175ed0af115.png" style="height:auto;">
 </p>
 <p align="center">
   <b>SVG Export</b>
 </p>
 <p align="center">
-  <img width="413" height="339" src="https://user-images.githubusercontent.com/13873576/40585175-443065f4-61ae-11e8-9ee5-a1af34697121.png">
+  <img width="413" height="339" src="https://user-images.githubusercontent.com/13873576/40585175-443065f4-61ae-11e8-9ee5-a1af34697121.png" style="height:auto;">
 </p>
 
 ## CLI
